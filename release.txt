@@ -1,0 +1,15 @@
+# Crear imagen en docker
+docker buildx build --platform linux/amd64 -t pokemon-api:latest . --load
+
+# Correr en el contenedor de docker
+docker run -d -p 8000:8000 --name pokemon-contanier --env-file .env pokemon-api:latest
+
+# Para implementar en el azure container registry
+az login
+az acr login --name acrpokemonprojectdev
+
+docker tag pokemon-api:latest acrpokemonprojectdev.azurecr.io/api-pokemon:latest
+docker tag pokemon-api:latest acrpokemonprojectdev.azurecr.io/api-pokemon:0.0.0
+
+docker push acrpokemonprojectdev.azurecr.io/api-pokemon:latest
+docker push acrpokemonprojectdev.azurecr.io/api-pokemon:0.0.0
