@@ -10,6 +10,9 @@ load_dotenv()
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
+# Configuración de la conexión a la base de datos
+logger.info("Cargando variables de entorno para la conexión a la base de datos...")
+# Asegúrate de que las variables de entorno estén definidas
 
 # Configuración de la conexión
 port = os.getenv('PGPORT')
@@ -41,13 +44,13 @@ async def get_db_connection():
         logger.error(f"Error conectando a la base de datos: {e}")
         raise
 
-async def execute_query_json(sql_template: str, params: Optional[tuple] = None, needs_commit: bool = False) -> Union[str, List[Dict]]:
+async def execute_query_json(sql_template, params=None, needs_commit=False):
+
     conn = None
     cursor = None
     try:
         conn = await get_db_connection()
         cursor = conn.cursor()
-        
         param_info = "(sin parámetros)" if not params else f"(con {len(params)} parámetros)"
         logger.info(f"Ejecutando consulta {param_info}: {sql_template}")
 
@@ -61,18 +64,16 @@ async def execute_query_json(sql_template: str, params: Optional[tuple] = None, 
             columns = [column[0] for column in cursor.description]
             logger.info(f"Columnas obtenidas: {columns}")
             for row in cursor.fetchall():
-                # Convertir tipos especiales como UUID, date, etc. a string
-                processed_row = [
-                    str(item) if item is not None else None 
-                    for item in row
-                ]
+                processed_row = [str(item) if isinstance(item, (bytes, bytearray)) else item for item in row]
                 results.append(dict(zip(columns, processed_row)))
+        else:
+             logger.info("La consulta no devolvió columnas (posiblemente INSERT/UPDATE/DELETE).")
 
         if needs_commit:
             logger.info("Realizando commit de la transacción.")
             conn.commit()
 
-        return json.dumps(results, default=str, ensure_ascii=False)
+        return json.dumps(results, default=str)
 
     except psycopg2.Error as e:
         logger.error(f"Error ejecutando la consulta (SQLSTATE: {e.pgcode}): {e.pgerror}")

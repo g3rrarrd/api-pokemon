@@ -1,6 +1,8 @@
 import uvicorn
 import fastapi
 from utils.database import execute_query_json
+from controller.pokeRequestController import insert_poke_request
+from models.pokeRequest import PokeRequest
 
 app = fastapi.FastAPI()
 
@@ -20,6 +22,10 @@ async def get_messages():
         return {"messages": results}
     except Exception as e:
         return {"error": str(e)}
+    
+@app.post("/api/pokemon/request")
+async def create_poke_request(poke_request: PokeRequest):
+    return await insert_poke_request(poke_request)
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
