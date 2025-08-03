@@ -2,7 +2,7 @@ name: Docker Build
 
 on:
   push:
-    branches: [ main ]
+    branches: [ master ]
     tags: [ 'v*.*.*' ]
 
 jobs:
@@ -12,6 +12,14 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
+
+    - name: Validate Dockerfile
+      run: |
+        if [ ! -f Dockerfile ]; then
+          echo " Dockerfile no encontrado"
+          exit 1
+        fi
+        cat Dockerfile  # Muestra el contenido para debug
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
