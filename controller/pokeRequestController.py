@@ -27,3 +27,38 @@ async def insert_poke_request(poke_request: PokeRequest):
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
     
+async def update_poke_request(poke_request: PokeRequest):
+    try:
+
+        query = """CALL pokemonqueue.update_poke_request(%s, %s, %s, NULL);"""
+
+        if not poke_request.url:
+            poke_request.url = ""
+
+        params = (poke_request.id,poke_request.status,poke_request.url,)
+        result = await execute_query_json(query, params, True)
+        result_dict = json.loads(result)
+
+        return result_dict
+        
+
+    except Exception as e:
+        logger.error(f"Error actualizando poke request: {e}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")
+
+async def select_poke_request(id: int):
+    try:
+
+        query = "select * from pokemonqueue.requests where id = %s"
+
+        params = (id,)
+        result = await execute_query_json(query, params, True)
+        result_dict = json.loads(result)
+
+        return result_dict
+        
+
+    except Exception as e:
+        logger.error(f"Error actualizando poke request: {e}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")
+
