@@ -1,10 +1,20 @@
 import uvicorn
 import fastapi
+
+from fastapi.middleware.cors import CORSMiddleware
 from utils.database import execute_query_json
 from controller.pokeRequestController import insert_poke_request, update_poke_request, select_poke_request, get_all_request
 from models.pokeRequest import PokeRequest
 
 app = fastapi.FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/version")
 async def version():
