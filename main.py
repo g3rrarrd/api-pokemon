@@ -8,11 +8,11 @@ app = fastapi.FastAPI()
 
 @app.get("/version")
 async def version():
-    return {"version": "0.1.0"}
+    return {"version": "0.2.0"}
 
 @app.get("/")
 async def read_root():
-    return {"message": "Welcome to the API!"}
+    return {"message": "Welcome to the API pokemon!"}
 
 @app.get("/pokemon/messages")
 async def get_messages():
