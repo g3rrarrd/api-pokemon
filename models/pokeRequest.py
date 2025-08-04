@@ -17,7 +17,8 @@ class PokeRequest(BaseModel):
     url: Optional[str] = Field(
         default=None,
         description="URL del Pokemon",
-        pattern="^https?://[a-zA-Z0-9.-]+$"
+        pattern="^https?://(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(?:/[a-zA-Z0-9_~%\-\.&=?]*)*$",
+        max_length=255
     )
 
     status: Optional[str] = Field(  

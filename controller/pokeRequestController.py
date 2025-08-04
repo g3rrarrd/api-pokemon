@@ -29,22 +29,28 @@ async def insert_poke_request(poke_request: PokeRequest):
 
     
 async def update_poke_request(poke_request: PokeRequest):
+
+    
     try:
-
-        query = """CALL pokemonqueue.update_poke_request(%s, %s, %s, NULL);"""
-
+        query = """CALL pokemonqueue.update_poke_request(%s, %s, %s);"""
+        
         if not poke_request.url:
             poke_request.url = ""
-
-        params = (poke_request.id,poke_request.status,poke_request.url,)
-        result = await execute_query_json(query, params, True)
-        result_dict = json.loads(result)
-
-        return result_dict
         
+        params = (poke_request.id, poke_request.status, poke_request.url)
+        result = await execute_query_json(query, params, True)
+        
+        if not result:
+            raise HTTPException(status_code=404, detail="Request not found")
+            
+        result_dict = json.loads(result)
+        return result_dict
 
+    except json.JSONDecodeError as e:
+        logger.error(f"JSON decode error: {e}")
+        raise HTTPException(status_code=500, detail="Invalid response from database")
     except Exception as e:
-        logger.error(f"Error actualizando poke request: {e}")
+        logger.error(f"Error updating poke request: {e}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
 async def select_poke_request(id: int):

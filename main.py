@@ -18,7 +18,7 @@ app.add_middleware(
 
 @app.get("/version")
 async def version():
-    return {"version": "0.4.0"}
+    return {"version": "0.4.1"}
 
 @app.get("/")
 async def read_root():
@@ -47,6 +47,7 @@ async def create_poke_request(poke_request: PokeRequest):
 
 @app.put("/api/pokemon/request")
 async def modify_poke_request(poke_request: PokeRequest):
+    print(f"Received poke_request: {poke_request}")
     return await update_poke_request(poke_request)
 
 
