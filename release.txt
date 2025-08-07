@@ -9,7 +9,14 @@ az login
 az acr login --name acrpokemonprojectdev
 
 docker tag pokemon-api:latest acrpokemonprojectdev.azurecr.io/api-pokemon:latest
-docker tag pokemon-api:latest acrpokemonprojectdev.azurecr.io/api-pokemon:0.2.0
+docker tag pokemon-api:latest acrpokemonprojectdev.azurecr.io/api-pokemon:1.0.1
 
 docker push acrpokemonprojectdev.azurecr.io/api-pokemon:latest
-docker push acrpokemonprojectdev.azurecr.io/api-pokemon:0.2.0
+docker push acrpokemonprojectdev.azurecr.io/api-pokemon:1.0.1
+
+docker buildx build --platform linux/amd64 -t pokemon-api:latest . --load
+docker tag pokemon-api:latest acrpokemonprojectdev.azurecr.io/api-pokemon:latest
+docker tag pokemon-api:latest acrpokemonprojectdev.azurecr.io/api-pokemon:1.1.1
+
+docker push acrpokemonprojectdev.azurecr.io/api-pokemon:latest
+docker push acrpokemonprojectdev.azurecr.io/api-pokemon:1.1.1

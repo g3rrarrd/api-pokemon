@@ -1,10 +1,15 @@
 import uvicorn
 import fastapi
+import logging
 
 from fastapi.middleware.cors import CORSMiddleware
 from utils.database import execute_query_json
-from controller.pokeRequestController import insert_poke_request, update_poke_request, select_poke_request, get_all_request
+from controller.pokeRequestController import insert_poke_request, update_poke_request, select_poke_request, get_all_request, delete_report
 from models.pokeRequest import PokeRequest
+
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 app = fastapi.FastAPI()
 
@@ -47,8 +52,13 @@ async def create_poke_request(poke_request: PokeRequest):
 
 @app.put("/api/pokemon/request")
 async def modify_poke_request(poke_request: PokeRequest):
+    logger.info("param received: %s", poke_request)
     print(f"Received poke_request: {poke_request}")
     return await update_poke_request(poke_request)
+
+@app.delete("/api/pokemon/request/{report_id}")
+async def delete_poke_request(report_id: int):
+    return await delete_report(report_id)
 
 
 

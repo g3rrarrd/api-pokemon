@@ -5,25 +5,25 @@ class PokeRequest(BaseModel):
     id: Optional[int] = Field(
         default=None,
         ge=1,
-        description="ID de la repeticion"
-        )
-    
+        description="ID de la peticion"
+    )
+
     pokemon_type: Optional[str] = Field(
         default=None,
-        description="Tipo de Pokemon",
+        description="Tipo de pokemon",
         pattern="^[a-zA-Z0-9_]+$"
     )
 
     url: Optional[str] = Field(
         default=None,
-        description="URL del Pokemon",
-        pattern="^https?://(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(?:/[a-zA-Z0-9_~%\-\.&=?]*)*$",
+        description="URL de la peticion",
+        pattern=r"^$|^https?://[^\s]+$",
         max_length=255
     )
 
-    status: Optional[str] = Field(  
-        default=None,
-        description="Estado de la repeticion",
-        pattern="^(En cola|En proceso|Finalizado|Error)$"
-    )
 
+    status: Optional[str] = Field(
+        default=None,
+        description="Estado de la peticion",
+        pattern="^(En Cola|Finalizado|Error|En Progreso)$"
+    )

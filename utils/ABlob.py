@@ -1,4 +1,5 @@
 import os
+import re
 from dotenv import load_dotenv
 from azure.storage.blob import BlobServiceClient, generate_blob_sas, BlobSasPermissions
 from datetime import datetime, timedelta
@@ -13,17 +14,25 @@ class ABlob:
         self.blob_service_client = BlobServiceClient.from_connection_string(AZURE_STORAGE_CONNECTION_STRING)
         self.container_client = self.blob_service_client.get_container_client(AZURE_STORAGE_CONTAINER)
 
-    def generate_sas_token(self, id: int):
-        
-        blob_name=f"poke_reporte_{id}.csv"
+        self.account_name = self.blob_service_client.account_name
+        self.account_key = re.search(r'AccountKey=([^;]+)', AZURE_STORAGE_CONNECTION_STRING).group(1)
+
+    def generate_sas(self, id: int):
+        blob_name = f"poke_reporte_{id}.csv"
         sas_token = generate_blob_sas(
-            account_name=self.container_client.account_name,
-            container_name = AZURE_STORAGE_CONTAINER,
+            account_name=self.account_name,
+            container_name=AZURE_STORAGE_CONTAINER,
             blob_name=blob_name,
-            account_key=self.blob_service_client.credential.account_key,
+            account_key=self.account_key,
             permission=BlobSasPermissions(read=True),
-            expiry=datetime.utcnow() + timedelta(hours=1)  # Token valid for 1 hour
+            expiry=datetime.utcnow() + timedelta(hours=24)
         )
+        
+        url = f"https://{self.account_name}.blob.core.windows.net/{AZURE_STORAGE_CONTAINER}/{blob_name}?{sas_token}"
+        return url
+    
+    def delete_blob(self, id: int):
+        blob_name = f"poke_reporte_{id}.csv"
+        blob_client = self.container_client.get_blob_client(blob_name)
+        blob_client.delete_blob()
 
-
-        return sas_token
