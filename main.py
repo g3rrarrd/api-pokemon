@@ -23,7 +23,7 @@ app.add_middleware(
 
 @app.get("/version")
 async def version():
-    return {"version": "0.4.1"}
+    return {"version": "1.3.3"}
 
 @app.get("/")
 async def read_root():

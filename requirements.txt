@@ -8,3 +8,4 @@ logging
 azure-storage-queue==12.11.0
 azure-storage-blob==12.22.0
 aiohttp
+asyncio

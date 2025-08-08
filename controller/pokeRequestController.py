@@ -7,6 +7,7 @@ from models.pokeRequest import PokeRequest
 from utils.database import execute_query_json
 from utils.aQueue import aQueue
 from utils.ABlob import ABlob
+import asyncio
 
 from fastapi import APIRouter, HTTPException, Depends, status
 from azure.core.exceptions import ResourceNotFoundError
@@ -18,20 +19,18 @@ logger = logging.getLogger(__name__)
 
 async def insert_poke_request(poke_request: PokeRequest):
     try:
-
-        query = """CALL pokemonqueue.create_poke_request(%s, NULL);"""
-        params = (poke_request.pokemon_type,)
+        query = """CALL pokemonqueue.create_poke_request(%s, %s, NULL);"""
+        params = (poke_request.pokemon_type, poke_request.sample_size)
         result = await execute_query_json(query, params, True)
         result_dict = json.loads(result)
 
         await aQueue().insert_message_on_queue(result)
 
         return result_dict
-        
-
     except Exception as e:
         logger.error(f"Error insertando poke request: {e}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
+
 
     
 async def update_poke_request(poke_request: PokeRequest):
@@ -93,7 +92,7 @@ async def get_all_request() -> dict:
         blob = ABlob()
         for record in result_dict:
             id = record["reporteid"]
-            record['url'] = f"{record['url']}?{blob.generate_sas(id)}"
+            record['url'] = f"{blob.generate_sas(id)}"
         
         return result_dict
         
