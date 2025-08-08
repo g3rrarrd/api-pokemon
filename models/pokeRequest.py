@@ -25,7 +25,7 @@ class PokeRequest(BaseModel):
     status: Optional[str] = Field(
         default=None,
         description="Estado de la peticion",
-        pattern="^(En Cola|Finalizado|Error|En Progreso)$"
+        pattern="^(En Cola|Finalizado|Error|En proceso)$"
     )
 
     sample_size: Optional[int] = Field(
